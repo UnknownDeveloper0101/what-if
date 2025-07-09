@@ -5,6 +5,8 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 class GeminiService {
   constructor() {
     this.apiKey = localStorage.getItem('gemini_api_key') || '';
+    this.maxRecentSteps = 5; // Configurable: how many recent steps to keep in full detail
+    this.tokenWarningThreshold = 8000; // Warn when approaching token limits
   }
 
   setApiKey(key) {
@@ -14,6 +16,104 @@ class GeminiService {
 
   hasApiKey() {
     return !!this.apiKey;
+  }
+
+  /**
+   * Configure token optimization settings
+   * @param {Object} options - Configuration options
+   * @param {number} options.maxRecentSteps - Number of recent steps to keep in full detail
+   * @param {number} options.tokenWarningThreshold - Token count threshold for warnings
+   */
+  configureTokenOptimization(options) {
+    if (options.maxRecentSteps !== undefined) {
+      this.maxRecentSteps = Math.max(1, Math.min(10, options.maxRecentSteps));
+    }
+    if (options.tokenWarningThreshold !== undefined) {
+      this.tokenWarningThreshold = Math.max(1000, options.tokenWarningThreshold);
+    }
+    console.log(`Token optimization configured: maxRecentSteps=${this.maxRecentSteps}, tokenWarningThreshold=${this.tokenWarningThreshold}`);
+  }
+
+  /**
+   * Get token usage statistics for current state
+   * @param {string} originalStory - The original story
+   * @param {string} timeline - The timeline
+   * @param {Array} branchPath - The branch path
+   * @returns {Object} - Token usage statistics
+   */
+  getTokenStatistics(originalStory, timeline, branchPath) {
+    const messages = this.buildMessageHistory(originalStory, timeline, null, branchPath);
+    const totalTokens = this.calculateMessageTokens(messages);
+    
+    // Calculate what the token count would be without summarization
+    const messagesWithoutSummary = this.buildMessageHistoryWithoutSummary(originalStory, timeline, null, branchPath);
+    const tokensWithoutSummary = this.calculateMessageTokens(messagesWithoutSummary);
+    
+    return {
+      totalTokens,
+      tokensWithoutSummary,
+      tokensSaved: tokensWithoutSummary - totalTokens,
+      branchPathLength: branchPath.length,
+      recentStepsIncluded: Math.min(branchPath.length, this.maxRecentSteps),
+      oldStepsSummarized: Math.max(0, branchPath.length - this.maxRecentSteps),
+      isNearLimit: totalTokens > this.tokenWarningThreshold
+    };
+  }
+
+  /**
+   * Helper method to build message history without summarization (for comparison)
+   */
+  buildMessageHistoryWithoutSummary(originalStory, timeline, currentChoice, branchPath) {
+    const messages = [];
+    
+    // System message (same as optimized version)
+    messages.push({
+      role: "user",
+      parts: [{
+        text: `You are a master storyteller creating immersive "What If" story continuations...`
+      }]
+    });
+
+    if (branchPath.length === 0) {
+      messages.push({
+        role: "user",
+        parts: [{
+          text: `My original story: "${originalStory}"\nTimeline: "${timeline}"\n\nBased on this story and timeline, create a detailed and engaging continuation...`
+        }]
+      });
+    } else {
+      // Include ALL branch path steps without summarization
+      messages.push({
+        role: "user",
+        parts: [{
+          text: `My original story: "${originalStory}"\nTimeline: "${timeline}"`
+        }]
+      });
+
+      branchPath.forEach((step, index) => {
+        if (index === 0) {
+          messages.push({
+            role: "model",
+            parts: [{ text: step.aiResponse }]
+          });
+        } else {
+          if (step.choice) {
+            messages.push({
+              role: "user",
+              parts: [{ text: `I chose: ${step.choice}` }]
+            });
+          }
+          if (step.aiResponse) {
+            messages.push({
+              role: "model",
+              parts: [{ text: step.aiResponse }]
+            });
+          }
+        }
+      });
+    }
+
+    return messages;
   }
 
   async generateStoryResponse(originalStory, timeline, currentChoice = null, branchPath = []) {
@@ -72,12 +172,123 @@ class GeminiService {
     }
   }
 
+  /**
+   * Estimates token count for a given text (rough approximation)
+   * @param {string} text - The text to estimate tokens for
+   * @returns {number} - Estimated token count
+   */
+  estimateTokenCount(text) {
+    // Rough approximation: 1 token ≈ 4 characters for English text
+    return Math.ceil(text.length / 4);
+  }
+
+  /**
+   * Calculates total token count for message history
+   * @param {Array} messages - Array of messages
+   * @returns {number} - Estimated total token count
+   */
+  calculateMessageTokens(messages) {
+    let totalTokens = 0;
+    messages.forEach(message => {
+      message.parts.forEach(part => {
+        totalTokens += this.estimateTokenCount(part.text);
+      });
+    });
+    return totalTokens;
+  }
+
+  /**
+   * Summarizes older branch path entries to reduce token usage
+   * @param {Array} branchPath - The full branch path
+   * @param {number} recentSteps - Number of recent steps to keep in full
+   * @returns {string} - Summary of older choices and outcomes
+   */
+  summarizeBranchPath(branchPath, recentSteps = 5) {
+    if (branchPath.length <= recentSteps) {
+      return null; // No need to summarize
+    }
+
+    const olderSteps = branchPath.slice(0, -recentSteps);
+    const themes = new Set();
+    const outcomes = new Set();
+    const emotions = new Set();
+    const keyEvents = new Set();
+
+    olderSteps.forEach((step, index) => {
+      if (step.aiResponse) {
+        const response = step.aiResponse.toLowerCase();
+        
+        // Extract themes and approaches
+        if (response.match(/risk|danger|hazard|peril|threat/)) themes.add('risky paths');
+        if (response.match(/safe|careful|cautious|prudent/)) themes.add('cautious approaches');
+        if (response.match(/bold|brave|courageous|daring/)) themes.add('bold decisions');
+        if (response.match(/help|assist|support|aid/)) themes.add('seeking help');
+        if (response.match(/alone|solo|independent|self/)) themes.add('going it alone');
+        
+        // Extract key outcomes
+        if (response.match(/betray|deceive|lie|cheat|backstab/)) outcomes.add('betrayal');
+        if (response.match(/secret|hidden|concealed|mystery/)) outcomes.add('hidden secrets');
+        if (response.match(/reunion|meet|encounter|find.*again/)) outcomes.add('reunion');
+        if (response.match(/conflict|fight|battle|struggle|confrontation/)) outcomes.add('conflict');
+        if (response.match(/discover|found|reveal|uncover/)) outcomes.add('discovery');
+        if (response.match(/escape|flee|run|evade/)) outcomes.add('escape');
+        if (response.match(/love|romance|kiss|heart|feelings/)) outcomes.add('romance');
+        if (response.match(/death|die|killed|murder/)) outcomes.add('death');
+        if (response.match(/success|achieve|accomplish|triumph/)) outcomes.add('success');
+        if (response.match(/fail|failure|defeat|loss/)) outcomes.add('failure');
+        
+        // Extract emotional states
+        if (response.match(/fear|afraid|scared|terror/)) emotions.add('fear');
+        if (response.match(/anger|rage|fury|mad/)) emotions.add('anger');
+        if (response.match(/sad|grief|mourn|sorrow/)) emotions.add('sadness');
+        if (response.match(/joy|happy|elated|excited/)) emotions.add('joy');
+        if (response.match(/hope|optimism|confidence/)) emotions.add('hope');
+        if (response.match(/despair|hopeless|desperat/)) emotions.add('despair');
+        
+        // Extract key events
+        if (response.match(/attack|assault|violence/)) keyEvents.add('violence');
+        if (response.match(/journey|travel|quest|adventure/)) keyEvents.add('journey');
+        if (response.match(/transform|change|become/)) keyEvents.add('transformation');
+        if (response.match(/trap|caught|prison/)) keyEvents.add('entrapment');
+        if (response.match(/power|strength|ability|magic/)) keyEvents.add('power');
+      }
+    });
+
+    // Build intelligent summary
+    let summary = "Previously, the user chose ";
+    
+    // Add themes if any
+    if (themes.size > 0) {
+      summary += Array.from(themes).join(' and ') + " ";
+    } else {
+      summary += "various paths ";
+    }
+    
+    // Add outcomes and events
+    const allElements = [...outcomes, ...keyEvents];
+    if (allElements.length > 0) {
+      summary += "that led to " + allElements.slice(0, 3).join(', ');
+      if (allElements.length > 3) summary += " and other developments";
+      summary += ".";
+    } else {
+      summary += "leading to various developments and consequences.";
+    }
+    
+    // Add emotional context if significant
+    if (emotions.size > 0) {
+      summary += " The journey involved " + Array.from(emotions).slice(0, 2).join(' and ') + ".";
+    }
+
+    console.log(`Summarizing ${olderSteps.length} older steps: ${summary}`);
+    return summary;
+  }
+
   buildMessageHistory(originalStory, timeline, currentChoice, branchPath) {
     const messages = [];
     
     // Check if the branch path is getting too long (could cause context overflow)
     if (branchPath.length > 8) {
-      console.warn('Branch path is getting very long, this may cause API issues');
+      console.warn('Branch path is getting very long, using summarization to manage token usage');
     }
     
     // System message - using user role with system instructions
@@ -134,17 +345,31 @@ Write only the story continuation, nothing else.`
         }]
       });
     } else {
-      // Build the full conversation history
+      // Build the conversation history with summarization for older entries
+      let baseMessage = `My original story: "${originalStory}"\nTimeline: "${timeline}"`;
+      
+      // Add summary of older choices if branch path is long
+      const summary = this.summarizeBranchPath(branchPath, this.maxRecentSteps);
+      if (summary) {
+        baseMessage += `\n\n${summary}`;
+      }
+      
       messages.push({
         role: "user",
         parts: [{
-          text: `My original story: "${originalStory}"\nTimeline: "${timeline}"`
+          text: baseMessage
         }]
       });
 
-      // Add each step in the branch path
-      branchPath.forEach((step, index) => {
-        if (index === 0) {
+      // Determine which steps to include in full detail
+      const startIndex = branchPath.length > this.maxRecentSteps ? branchPath.length - this.maxRecentSteps : 0;
+      const recentSteps = branchPath.slice(startIndex);
+
+      // Add each step in the recent branch path
+      recentSteps.forEach((step, index) => {
+        const actualIndex = startIndex + index;
+        
+        if (actualIndex === 0) {
           // First AI response (initial story continuation)
           messages.push({
             role: "model",
@@ -208,6 +433,14 @@ Write only the story continuation, nothing else.`
       }
     }
 
+    // Log token usage information
+    const totalTokens = this.calculateMessageTokens(messages);
+    console.log(`Message history tokens: ${totalTokens} (Branch path length: ${branchPath.length})`);
+    
+    if (totalTokens > this.tokenWarningThreshold) {
+      console.warn('High token usage detected, consider reducing maxRecentSteps or improving summarization');
+    }
+
     return messages;
   }
 
@@ -217,6 +450,7 @@ Write only the story continuation, nothing else.`
     }
 
     try {
+      // Use the optimized message history that includes summarization
       const messages = this.buildMessageHistory(originalStory, timeline, null, branchPath);
       
       // Add the current story part and request for options
