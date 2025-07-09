@@ -1,0 +1,246 @@
+/* CustomOptionCard Component Styles */
+.customOptionCard {
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0;
+  font-family: 'Inter', 'Space Grotesk', 'Poppins', sans-serif;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.customOptionCard::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(45deg, #1f1f1f, #333, #1f1f1f);
+  border-radius: 8px;
+  z-index: -1;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.customOptionCard:hover {
+  border-color: #00FFC6;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(0, 255, 198, 0.3),
+    0 0 15px rgba(0, 255, 198, 0.15);
+}
+
+.customOptionCard:hover::before {
+  opacity: 1;
+}
+
+.customOptionCard:focus-within {
+  border-color: #00FFC6;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(0, 255, 198, 0.4),
+    0 0 20px rgba(0, 255, 198, 0.2);
+}
+
+/* Form styling */
+.form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Input container */
+.inputContainer {
+  flex: 1;
+  position: relative;
+}
+
+/* Input styling */
+.input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95em;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 48px;
+  transition: all 0.3s ease;
+}
+
+.input::placeholder {
+  color: #666;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #00FFC6;
+  box-shadow: 
+    0 0 0 2px rgba(0, 255, 198, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Character count */
+.charCount {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 0.75em;
+  color: #666;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Submit button */
+.submitButton {
+  background: linear-gradient(135deg, #00FFC6, #00FF7F);
+  border: none;
+  border-radius: 6px;
+  width: 48px;
+  height: 48px;
+  color: #000;
+  font-size: 1.2em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00FF7F, #00FFC6);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(0, 255, 198, 0.3);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+.submitButton:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Submit icon */
+.submitIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.submitButton:hover:not(:disabled) .submitIcon {
+  transform: rotate(45deg);
+}
+
+/* Spinner animation */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #666;
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Disabled state */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.disabled:hover {
+  border-color: #333;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .customOptionCard {
+    padding: 14px;
+  }
+  
+  .form {
+    gap: 10px;
+  }
+  
+  .input {
+    padding: 10px 14px;
+    font-size: 0.9em;
+  }
+  
+  .submitButton {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .customOptionCard {
+    padding: 12px;
+  }
+  
+  .form {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .submitButton {
+    width: 100%;
+    height: 44px;
+    border-radius: 6px;
+  }
+  
+  .submitIcon {
+    transform: rotate(90deg);
+  }
+  
+  .submitButton:hover:not(:disabled) .submitIcon {
+    transform: rotate(135deg);
+  }
+}

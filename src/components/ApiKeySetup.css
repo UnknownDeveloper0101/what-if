@@ -7,38 +7,43 @@
 }
 
 .setup-container {
-  background: white;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 16px;
   padding: 3rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 255, 127, 0.1);
   max-width: 600px;
   width: 100%;
 }
 
 .setup-container h2 {
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 1rem;
   text-align: center;
   font-size: 2.2rem;
+  text-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
 }
 
 .setup-container > p {
-  color: #7f8c8d;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.1rem;
 }
 
 .info-section {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  border-left: 4px solid #3498db;
+  border-left: 4px solid var(--accent-neon);
+  border: 1px solid var(--border-primary);
 }
 
 .info-section h3 {
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 1rem;
   font-size: 1.2rem;
 }
@@ -51,18 +56,19 @@
 
 .info-section li {
   margin-bottom: 0.5rem;
-  color: #34495e;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
 .info-section a {
-  color: #3498db;
+  color: var(--accent-neon);
   text-decoration: none;
   font-weight: 600;
 }
 
 .info-section a:hover {
   text-decoration: underline;
+  color: var(--accent-neon-alt);
 }
 
 .form-group {
@@ -72,7 +78,7 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -87,26 +93,28 @@
   flex: 1;
   padding: 1rem;
   padding-right: 3rem;
-  border: 2px solid #e1e8ed;
+  border: 2px solid var(--border-primary);
   border-radius: 8px;
   font-size: 1rem;
   font-family: 'Consolas', 'Monaco', monospace;
   transition: border-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }
 
 .api-key-input-container input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--accent-neon);
+  box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.2);
 }
 
 .api-key-input-container input.error {
-  border-color: #e74c3c;
+  border-color: var(--accent-danger);
 }
 
 .api-key-input-container input.error:focus {
-  border-color: #e74c3c;
-  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  border-color: var(--accent-danger);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
 }
 
 .toggle-visibility {
@@ -119,10 +127,12 @@
   padding: 0.2rem;
   border-radius: 4px;
   transition: background-color 0.3s ease;
+  color: var(--text-secondary);
 }
 
 .toggle-visibility:hover:not(:disabled) {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent-neon);
 }
 
 .toggle-visibility:disabled {
@@ -132,7 +142,7 @@
 
 .error-message {
   display: block;
-  color: #e74c3c;
+  color: var(--accent-danger);
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
@@ -140,8 +150,8 @@
 .setup-btn {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: white;
+  background: linear-gradient(135deg, var(--accent-neon), var(--accent-neon-alt));
+  color: #000;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -149,16 +159,18 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .setup-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #27ae60, #229954);
+  background: linear-gradient(135deg, var(--accent-neon-alt), var(--accent-neon));
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 255, 127, 0.4);
 }
 
 .setup-btn:disabled {
-  background: #bdc3c7;
+  background: var(--border-primary);
+  color: var(--text-muted);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -167,15 +179,15 @@
 .security-note {
   margin-top: 2rem;
   padding: 1rem;
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
+  background: rgba(255, 149, 0, 0.1);
+  border: 1px solid var(--accent-warning);
   border-radius: 8px;
   font-size: 0.9rem;
 }
 
 .security-note p {
   margin: 0;
-  color: #856404;
+  color: var(--accent-warning);
 }
 
 @media (max-width: 768px) {

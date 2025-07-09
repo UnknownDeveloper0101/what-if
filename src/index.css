@@ -1,14 +1,27 @@
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Space Grotesk', 'Poppins', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light;
-  color: #213547;
-  background-color: #ffffff;
+  color-scheme: dark;
+  color: #ffffff;
+  background-color: #000000;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Dark theme color variables */
+  --bg-primary: #000000;
+  --bg-card: #000000;
+  --border-primary: #333333;
+  --border-secondary: #1f1f1f;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #999999;
+  --accent-neon: #00FF7F;
+  --accent-neon-alt: #00FFC6;
+  --accent-danger: #ff6b6b;
+  --accent-warning: #ff9500;
 }
 
 * {
@@ -20,7 +33,8 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #f8f9fa;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 #root {
@@ -30,28 +44,35 @@ body {
 
 a {
   font-weight: 500;
-  color: #3498db;
+  color: var(--accent-neon);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #2980b9;
+  color: var(--accent-neon-alt);
 }
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-primary);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
+button:hover {
+  border-color: var(--accent-neon);
+  background: rgba(0, 255, 127, 0.1);
+}
+
 button:focus,
 button:focus-visible {
-  outline: 2px solid #3498db;
+  outline: 2px solid var(--accent-neon);
   outline-offset: 2px;
 }
 
@@ -70,10 +91,131 @@ ul, ol {
 input, textarea {
   font-family: inherit;
   font-size: inherit;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-neon);
+  box-shadow: 0 0 0 2px rgba(0, 255, 127, 0.2);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Ensure all text elements use the correct color */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
 }
 
 /* Ensure images are responsive */
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-neon);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 255, 127, 0.3);
+  color: var(--text-primary);
+}
+
+::-moz-selection {
+  background: rgba(0, 255, 127, 0.3);
+  color: var(--text-primary);
+}
+
+/* Ensure all containers are pure black */
+div, section, article, aside, header, footer, nav, main {
+  background: inherit;
+  color: inherit;
+}
+
+/* Make sure any modal or overlay backgrounds are black */
+.modal, .overlay, .backdrop {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+/* Ensure code blocks are styled appropriately */
+code, pre {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-neon);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+pre {
+  padding: 12px;
+  overflow-x: auto;
+  border: 1px solid var(--border-primary);
+}
+
+/* Table styling */
+table {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid var(--border-primary);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+}
+
+/* Ensure form elements are consistent */
+fieldset {
+  border: 1px solid var(--border-primary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+legend {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Loading animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }

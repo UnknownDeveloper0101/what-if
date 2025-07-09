@@ -7,23 +7,27 @@
 }
 
 .form-container {
-  background: white;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   padding: 3rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 255, 127, 0.1);
   max-width: 600px;
   width: 100%;
 }
 
 .form-container h2 {
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-align: center;
   font-size: 2rem;
+  text-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
 }
 
 .form-container p {
-  color: #7f8c8d;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.1rem;
@@ -36,7 +40,7 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -45,19 +49,21 @@
 .form-group input {
   width: 100%;
   padding: 1rem;
-  border: 2px solid #e1e8ed;
+  border: 2px solid var(--border-primary);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
   transition: border-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
 }
 
 .form-group textarea:focus,
 .form-group input:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--accent-neon);
+  box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.2);
 }
 
 .form-group textarea {
@@ -67,7 +73,7 @@
 
 .form-group small {
   display: block;
-  color: #7f8c8d;
+  color: var(--text-muted);
   margin-top: 0.5rem;
   font-size: 0.9rem;
 }
@@ -75,8 +81,8 @@
 .submit-btn {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
+  background: linear-gradient(135deg, var(--accent-neon), var(--accent-neon-alt));
+  color: #000;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -84,16 +90,18 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2980b9, #21618c);
+  background: linear-gradient(135deg, var(--accent-neon-alt), var(--accent-neon));
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 255, 127, 0.4);
 }
 
 .submit-btn:disabled {
-  background: #bdc3c7;
+  background: var(--border-primary);
+  color: var(--text-muted);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;

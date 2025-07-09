@@ -3,19 +3,7 @@ import './StoryTree.css'
 import StoryNode from './StoryNode'
 
 const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
-  const [expandedNodes, setExpandedNodes] = useState(new Set([node.id]))
-
-  const toggleNode = (nodeId) => {
-    setExpandedNodes(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(nodeId)) {
-        newSet.delete(nodeId)
-      } else {
-        newSet.add(nodeId)
-      }
-      return newSet
-    })
-  }
+  // Simple linear story display - no expand/collapse needed
 
   const addChildNode = async (parentId, choiceText, isCustom = false) => {
     const newChildId = Date.now().toString()
@@ -56,7 +44,6 @@ const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
     
     const treeWithLoading = addChildWithLoading(node)
     onUpdate(treeWithLoading)
-    setExpandedNodes(prev => new Set([...prev, newChildId]))
     
     // Then generate the actual content
     try {
@@ -146,42 +133,32 @@ const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
     onUpdate(updatedTree)
   }
 
+  // Flatten the tree into a linear array for simple display
+  const flattenTree = (node, result = []) => {
+    result.push(node)
+    // Always show all nodes in linear fashion
+    node.children.forEach(child => flattenTree(child, result))
+    return result
+  }
+
+  const flatNodes = flattenTree(node)
+
   return (
     <div className="story-tree">
-      <div className="tree-container">
-        <StoryNode
-          node={node}
-          isExpanded={expandedNodes.has(node.id)}
-          onToggle={() => toggleNode(node.id)}
-          onAddChild={addChildNode}
-          onEndStory={endStory}
-          level={0}
-        />
-        {renderChildren(node, expandedNodes, toggleNode, addChildNode, endStory)}
+      <div className="story-container">
+        {flatNodes.map((storyNode, index) => (
+          <div key={storyNode.id} className="story-node-wrapper">
+            <StoryNode
+              node={storyNode}
+              onAddChild={addChildNode}
+              onEndStory={endStory}
+              level={storyNode.level}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )
-}
-
-const renderChildren = (node, expandedNodes, toggleNode, addChildNode, endStory, parentPos = { x: 0, y: 0 }) => {
-  if (!expandedNodes.has(node.id) || node.children.length === 0) {
-    return null
-  }
-
-  return node.children.map((child, index) => (
-    <div key={child.id} className="child-container">
-      <div className="branch-line" style={{ left: `${parentPos.x + 50}px` }}></div>
-      <StoryNode
-        node={child}
-        isExpanded={expandedNodes.has(child.id)}
-        onToggle={() => toggleNode(child.id)}
-        onAddChild={addChildNode}
-        onEndStory={endStory}
-        level={child.level}
-      />
-      {renderChildren(child, expandedNodes, toggleNode, addChildNode, endStory, { x: parentPos.x + 100, y: parentPos.y + 100 })}
-    </div>
-  ))
 }
 
 export default StoryTree

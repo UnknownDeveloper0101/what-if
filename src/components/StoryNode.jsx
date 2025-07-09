@@ -25,21 +25,13 @@ const StoryNode = ({ node, isExpanded, onToggle, onAddChild, onEndStory, level }
   return (
     <div className={`story-node level-${level}`}>
       <div className="node-header">
-        <button 
-          className="expand-btn" 
-          onClick={onToggle}
-          disabled={node.isEnded}
-        >
-          {isExpanded ? '▼' : '▶'}
-        </button>
         <h3 className="node-title">
-          {level === 0 ? 'Original Story' : `Choice: ${node.content.substring(0, 50)}...`}
+          {level === 0 ? 'Your What If Story' : `Choice: ${node.content.substring(0, 50)}...`}
           {node.isCustom && <span className="custom-badge">Custom</span>}
         </h3>
       </div>
 
-      {isExpanded && (
-        <div className="node-content">
+      <div className="node-content">
           {level === 0 && (
             <div className="original-story">
               <h4>Your Story:</h4>
@@ -125,7 +117,6 @@ const StoryNode = ({ node, isExpanded, onToggle, onAddChild, onEndStory, level }
             </div>
           )}
         </div>
-      )}
     </div>
   )
 }
