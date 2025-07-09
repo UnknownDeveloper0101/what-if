@@ -23,20 +23,23 @@ const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
     // First, add the node with loading state
     const addChildWithLoading = (currentNode) => {
       if (currentNode.id === parentId) {
+        // Build the new branch path by extending the parent's path
+        const newBranchPath = [
+          ...(currentNode.branchPath || []),
+          { choice: choiceText, aiResponse: currentNode.aiResponse }
+        ]
+        
         const newChild = {
           id: newChildId,
-          content: choiceText,
-          timeline: "continuing the story...",
+          content: currentNode.content, // Keep original story content
+          timeline: currentNode.timeline, // Keep original timeline
           aiResponse: "🤖 Generating your story...",
           options: [],
           children: [],
           level: currentNode.level + 1,
           isCustom: isCustom,
           isLoading: true,
-          storyHistory: [
-            ...(currentNode.storyHistory || []),
-            { choice: choiceText, result: currentNode.aiResponse }
-          ]
+          branchPath: newBranchPath
         }
         
         return {
@@ -59,7 +62,14 @@ const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
     try {
       const parentNode = findNodeById(node, parentId)
       const aiResponse = await generateAIResponse(choiceText, parentNode)
-      const options = await generateOptions(parentNode.content, aiResponse)
+      
+      // Build the updated branch path for generating options
+      const updatedBranchPath = [
+        ...(parentNode.branchPath || []),
+        { choice: choiceText, aiResponse: aiResponse }
+      ]
+      
+      const options = await generateOptions(parentNode.content, parentNode.timeline, aiResponse, updatedBranchPath)
       
       const updateChildContent = (currentNode) => {
         if (currentNode.id === newChildId) {
@@ -67,7 +77,8 @@ const StoryTree = ({ node, onUpdate, generateAIResponse, generateOptions }) => {
             ...currentNode,
             aiResponse: aiResponse,
             options: options,
-            isLoading: false
+            isLoading: false,
+            branchPath: updatedBranchPath
           }
         }
         

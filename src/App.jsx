@@ -32,7 +32,9 @@ function App() {
       // Generate options
       const options = await geminiService.generateStoryOptions(
         initialStory, 
-        aiResponse
+        timeline,
+        aiResponse,
+        []
       )
 
       const newStoryTree = {
@@ -43,7 +45,7 @@ function App() {
         options: options,
         children: [],
         level: 0,
-        storyHistory: []
+        branchPath: [{ aiResponse: aiResponse }]
       }
       
       setStoryTree(newStoryTree)
@@ -57,23 +59,35 @@ function App() {
 
   const generateAIResponse = async (choice, parentNode) => {
     try {
-      const storyHistory = parentNode.storyHistory || []
+      const branchPath = parentNode.branchPath || []
       const response = await geminiService.generateStoryResponse(
         parentNode.content,
         parentNode.timeline,
         choice,
-        storyHistory
+        branchPath
       )
+      
+      // Check if response is too short or seems like an error
+      if (!response || response.length < 100) {
+        throw new Error('Response too short or empty')
+      }
+      
       return response
     } catch (error) {
       console.error('Error generating AI response:', error)
-      return `The story continues as you chose: "${choice}"\n\nThe path ahead is uncertain, but your decision has set events in motion that will shape the outcome of your journey. What happens next depends on the choices you make...`
+      
+      // Create a more contextual fallback response
+      return `I chose to ${choice.toLowerCase()}. The weight of this decision settles over me as I consider the implications. This moment represents a turning point, and whatever happens next will be shaped by the courage or caution I've shown.
+
+The story continues to unfold, carrying with it the hopes and fears that have brought me to this crossroads. Each choice builds upon the last, creating a path that is uniquely mine. Sometimes the most important moments come not from grand gestures, but from the quiet decisions we make when no one else is watching.
+
+As I move forward, I carry with me the lessons learned and the emotions felt. The future remains unwritten, a blank page waiting for the next chapter to begin.`
     }
   }
 
-  const generateOptions = async (storyContext, currentStoryPart) => {
+  const generateOptions = async (originalStory, timeline, currentStoryPart, branchPath = []) => {
     try {
-      const options = await geminiService.generateStoryOptions(storyContext, currentStoryPart)
+      const options = await geminiService.generateStoryOptions(originalStory, timeline, currentStoryPart, branchPath)
       return options
     } catch (error) {
       console.error('Error generating options:', error)
