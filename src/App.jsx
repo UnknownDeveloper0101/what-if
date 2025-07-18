@@ -3,6 +3,7 @@ import './App.css'
 import StoryTree from './components/StoryTree'
 import InitialStoryForm from './components/InitialStoryForm'
 import ApiKeySetup from './components/ApiKeySetup'
+import ErrorBoundary from './components/ErrorBoundary'
 import geminiService from './services/geminiService'
 
 function App() {
@@ -67,9 +68,15 @@ function App() {
         branchPath
       )
       
-      // Check if response is too short or seems like an error
-      if (!response || response.length < 100) {
+      // Check if response is valid and substantial
+      if (!response || response.length < 200) {
         throw new Error('Response too short or empty')
+      }
+      
+      // Check if response contains generic fallback indicators
+      if (response.includes('The path ahead is uncertain') || 
+          response.includes('The story continues as you chose')) {
+        throw new Error('Received generic fallback response')
       }
       
       return response
@@ -106,13 +113,14 @@ As I move forward, I carry with me the lessons learned and the emotions felt. Th
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>What If? - Interactive Story Creator</h1>
-        <p>Create alternate realities and explore infinite possibilities</p>
-      </header>
-      
-      <main className="app-main">
+    <ErrorBoundary>
+      <div className="app">
+        <header className="app-header">
+          <h1>What If? - Interactive Story Creator</h1>
+          <p>Create alternate realities and explore infinite possibilities</p>
+        </header>
+        
+        <main className="app-main">
         {!hasApiKey ? (
           <ApiKeySetup onApiKeySet={handleApiKeySet} />
         ) : !isStarted ? (
@@ -153,8 +161,9 @@ As I move forward, I carry with me the lessons learned and the emotions felt. Th
             />
           </div>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+    </ErrorBoundary>
   )
 }
 

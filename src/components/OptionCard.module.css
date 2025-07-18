@@ -94,20 +94,20 @@
 }
 
 .danger {
-  border-color: #ff9500;
+  border-color: #333;
 }
 
 .danger:hover {
-  border-color: #ff8c00;
+  border-color: #00FF7F;
   box-shadow: 
     0 4px 8px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(255, 140, 0, 0.3),
-    0 0 15px rgba(255, 140, 0, 0.15);
+    0 0 0 1px rgba(0, 255, 127, 0.3),
+    0 0 15px rgba(0, 255, 127, 0.15);
 }
 
 .danger::before {
-  background: linear-gradient(45deg, #2a251f, #3a2f22, #2a251f);
+  background: linear-gradient(45deg, #1f1f1f, #333, #1f1f1f);
 }
 
 /* Disabled state */

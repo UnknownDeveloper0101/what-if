@@ -31,7 +31,7 @@
 }
 
 .story-node.level-3 {
-  border-left: 5px solid var(--accent-warning);
+  border-left: 5px solid var(--accent-neon);
 }
 
 .story-node.level-4 {
@@ -242,8 +242,8 @@
 }
 
 .custom-toggle-btn {
-  background: var(--accent-warning);
-  color: var(--text-primary);
+  background: var(--accent-neon);
+  color: #000;
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 6px;
@@ -257,9 +257,9 @@
 }
 
 .custom-toggle-btn:hover {
-  background: #e67e22;
+  background: var(--accent-neon-alt);
   transform: translateY(-1px);
-  box-shadow: 0 0 15px rgba(255, 149, 0, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 127, 0.3);
 }
 
 .custom-form {
@@ -283,8 +283,8 @@
 
 .custom-input:focus {
   outline: none;
-  border-color: var(--accent-warning);
-  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.2);
+  border-color: var(--accent-neon);
+  box-shadow: 0 0 0 2px rgba(0, 255, 127, 0.2);
 }
 
 .custom-actions {
